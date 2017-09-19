@@ -5,7 +5,7 @@ const morgan = require('morgan')
 
 const routes = require('../routes')
 
-const apiResponseMiddleware = require('../middleware/api-response')
+// const apiResponseMiddleware = require('../middleware/api-response')
 
 module.exports = (app) => {
   app.use(cors())

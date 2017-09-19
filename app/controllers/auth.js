@@ -1,4 +1,4 @@
-const { ApiResponseSuccess, generateJwt } = require('../utils')
+const { SuccessResponse, generateJwt } = require('../utils')
 const User = require('../models/user')
 const { validateUser } = require('../schemas')
 
@@ -8,21 +8,21 @@ const { validateUser } = require('../schemas')
   //   role: request.role
 
 exports.register = function (req, res, next) {
-  if (!validateUser(req.body)) next({ message: 'Validation error' })
+  if (!validateUser(req.body)) next({ message: 'user validation error' })
 
   User.findOne({ email: req.body.email })
     .then(existingUser => {
-      if (existingUser) next({ message: 'That email address is already in use.' })
+      if (existingUser) next({ message: 'email address already in use' })
 
       const user = new User(req.body)
       return user.save()
     })
-    .then(() => new ApiResponseSuccess({ message: 'registration success' }).send(res))
+    .then(() => new SuccessResponse({ message: 'registration successful' }).send(res))
     .catch(next)
 }
 
 exports.login = function (req, res, next) {
-  new ApiResponseSuccess({
+  new SuccessResponse({
     token: `JWT ${generateJwt(req.body)}`,
     user: req.body
   }).send(res)

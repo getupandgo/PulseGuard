@@ -1,45 +1,52 @@
 const jsend = require('jsend')
 
-class ApiResponse {
-  constructor (data, status = 200) {
-    this.status = status
-    this.data = data
+/* JSend wrapper for express by @nickrabaev
+* typical usage:
+* ApiResponseSuccess(data)
+* non typical usage:
+* ApiResponseFail(data, httpCode)
+* */
+
+class Response {
+  constructor (requestBody = null, httpStatusCode = 200) {
+    this.httpStatusCode = httpStatusCode
+    this.requestBody = requestBody
   }
 
-  build () {
+  buildJSendBody () {
     switch (this.constructor.name) {
-      case 'ApiResponseSuccess':
-        return jsend.success(this.data)
-      case 'ApiResponseFail':
-        return jsend.fail(this.data)
-      case 'ApiResponseError':
-        return jsend.error(this.data)
+      case 'SuccessResponse':
+        return jsend.success(this.requestBody)
+      case 'FailResponse':
+        return jsend.fail(this.requestBody)
+      case 'ErrorResponse':
+        return jsend.error(this.requestBody)
       default:
         return null
     }
   }
 
   send (res) {
-    res.status(this.status).json(this.build())
+    res.status(this.httpStatusCode).json(this.buildJSendBody())
   }
 }
 
-class ApiResponseSuccess extends ApiResponse { }
+class SuccessResponse extends Response { }
 
-class ApiResponseFail extends ApiResponse {
-  constructor (data, status = 400) {
-    super(data, status)
+class FailResponse extends Response {
+  constructor (requestBody, httpStatusCode = 400) {
+    super(requestBody, httpStatusCode)
   }
 }
 
-class ApiResponseError extends ApiResponse {
-  constructor (data, status = 500) {
-    super(data, status)
+class ErrorResponse extends Response {
+  constructor (requestBody, httpStatusCode = 500) {
+    super(requestBody, httpStatusCode)
   }
 }
 
 module.exports = {
-  ApiResponseSuccess,
-  ApiResponseFail,
-  ApiResponseError
+  SuccessResponse,
+  FailResponse,
+  ErrorResponse
 }

@@ -1,9 +1,9 @@
-const { ApiResponseSuccess, ApiResponseFail, ApiResponseError } = require('./api-response')
+const { SuccessResponse, FailResponse, ErrorResponse } = require('./api-response')
 const { generateJwt } = require('./generate-jwt')
 
 module.exports = {
-  ApiResponseSuccess,
-  ApiResponseFail,
-  ApiResponseError,
+  SuccessResponse,
+  FailResponse,
+  ErrorResponse,
   generateJwt
 }

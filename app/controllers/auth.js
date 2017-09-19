@@ -1,9 +1,11 @@
-// const jwt = require('jsonwebtoken')
-// const config = require('config')
-
-const { ApiResponseSuccess } = require('../utils/api-response')
+const { ApiResponseSuccess, generateJwt } = require('../utils')
 const User = require('../models/user')
 const { validateUser } = require('../schemas')
+
+  //   _id: request._id,
+  //   username: request.profile.username,
+  //   email: request.email,
+  //   role: request.role
 
 exports.register = function (req, res, next) {
   if (!validateUser(req.body)) next({ message: 'Validation error' })
@@ -19,30 +21,13 @@ exports.register = function (req, res, next) {
     .catch(next)
 }
 
-// function generateToken (user) {
-//   return jwt.sign(user, config.get('jwt.secret'), {
-//     expiresIn: 10080 // in seconds
-//   })
-// }
-//
-// // Set user info from request
-// function setUserInfo (request) {
-//   return {
-//     _id: request._id,
-//     username: request.profile.username,
-//     email: request.email,
-//     role: request.role
-//   }
-// }
+exports.login = function (req, res, next) {
+  new ApiResponseSuccess({
+    token: `JWT ${generateJwt(req.body)}`,
+    user: req.body
+  }).send(res)
+}
 
-// exports.login = function (req, res, next) {
-//   const userInfo = setUserInfo(req.user)
-//
-//   new ApiResponseSuccess({
-//     token: `JWT ${generateToken(userInfo)}`,
-//     user: userInfo
-//   }).send(res)
-// }
 //
 // exports.me = (req, res) => {
 //   return new ApiResponseSuccess({ user: setUserInfo(req.user) }).send(res)

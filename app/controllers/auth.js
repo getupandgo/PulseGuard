@@ -1,4 +1,5 @@
-const { SuccessResponse, generateJwt } = require('../utils')
+const { SuccessResponse } = require('../lib/jsend-response')
+const { generateJwt } = require('../utils')
 const User = require('../models/user')
 const { validateUser } = require('../schemas')
 
@@ -8,11 +9,11 @@ const { validateUser } = require('../schemas')
   //   role: request.role
 
 exports.register = function (req, res, next) {
-  if (!validateUser(req.body)) next({ message: 'user validation error' })
+  if (!validateUser(req.body)) next({ errMsg: 'user validation error', code: 401 })
 
   User.findOne({ email: req.body.email })
     .then(existingUser => {
-      if (existingUser) next({ message: 'email address already in use' })
+      if (existingUser) next({ errMsg: 'email address already in use', code: 400 })
 
       const user = new User(req.body)
       return user.save()

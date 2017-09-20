@@ -1,7 +1,7 @@
 const bodyParser = require('body-parser')
 const cors = require('cors')
-const config = require('config')
 const morgan = require('morgan')
+const config = require('config')
 
 const routes = require('../routes')
 

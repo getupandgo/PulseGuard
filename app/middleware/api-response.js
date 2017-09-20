@@ -1,4 +1,4 @@
-const apiResponse = require('../utils/api-response')
+const apiResponse = require('../lib/jsend-response')
 
 module.exports = (err, req, res, next) => {
   if (err instanceof apiResponse.ApiResponseFail) {

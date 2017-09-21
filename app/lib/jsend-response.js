@@ -8,41 +8,29 @@ const jsend = require('jsend')
 * */
 
 class Response {
-  constructor (requestBody = null, httpStatusCode = 200) {
+  constructor (requestBody = null, httpStatusCode = 200, type = 'success') {
+    this.type = type
     this.httpStatusCode = httpStatusCode
-    this.requestBody = requestBody
+    this.responseBody = requestBody
   }
-
-  buildJSendBody () {
-    switch (this.constructor.name) {
-      case 'SuccessResponse':
-        return jsend.success(this.requestBody)
-      case 'FailResponse':
-        return jsend.fail(this.requestBody)
-      case 'ErrorResponse':
-        return jsend.error(this.requestBody)
-      default:
-        return null
-    }
+  buildResponseBody () {
+    return jsend[this.type](this.responseBody)
   }
-
   send (res) {
-    res.status(this.httpStatusCode).json(this.buildJSendBody())
+    res.status(this.httpStatusCode).json(this.buildResponseBody())
   }
 }
 
-class SuccessResponse extends Response { }
-
-class FailResponse extends Response {
-  constructor (requestBody, httpStatusCode = 400) {
-    super(requestBody, httpStatusCode)
-  }
+function SuccessResponse (requestBody, httpStatusCode) {
+  return new Response(requestBody, httpStatusCode)
 }
 
-class ErrorResponse extends Response {
-  constructor (requestBody, httpStatusCode = 500) {
-    super(requestBody, httpStatusCode)
-  }
+function FailResponse (requestBody, httpStatusCode = 400) {
+  return new Response(requestBody, httpStatusCode, 'fail')
+}
+
+function ErrorResponse (requestBody, httpStatusCode = 500) {
+  return new Response(requestBody, httpStatusCode, 'error')
 }
 
 module.exports = {

@@ -30,8 +30,9 @@ describe('Authentication', function () {
   })
 
   it('should login existant user', () => {
-    agent
-      .get('/return')
-      .expect('hey')
+    return agent
+      .post('/auth/login')
+      .send(userData)
+      .expect(200)
   })
 })

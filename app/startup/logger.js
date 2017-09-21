@@ -5,9 +5,8 @@ const config = require('config')
 winston.configure({
   transports: [
     new (winston.transports.Console)({
-      level: 'error',
+      level: 'info',
       colorize: true,
-      timestamp: true,
       label: 'Backend'
     }),
     new (winston.transports.File)({
@@ -25,20 +24,25 @@ winston.configure({
   ]
 })
 
-exports.allReqLogger = morgan('combined', {
+const allReqLogger = morgan('combined', {
   skip: (req, res) => {
-    return res.statusCode < 400
+    return res.statusCode > 500
   },
   stream: {
     write: message => winston.info(message.trim())
   }
 })
 
-exports.errReqLogger = morgan('combined', {
+const errReqLogger = morgan('combined', {
   skip: (req, res) => {
-    return res.statusCode >= 400
+    return res.statusCode <= 500
   },
   stream: {
     write: message => winston.error(message.trim())
   }
 })
+
+module.exports = (app) => {
+  app.use(allReqLogger)
+  app.use(errReqLogger)
+}

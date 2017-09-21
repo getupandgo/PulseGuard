@@ -1,4 +1,4 @@
-const { generateJwt } = require('./generate-jwt')
+const generateJwt = require('./generate-jwt')
 
 module.exports = {
   generateJwt

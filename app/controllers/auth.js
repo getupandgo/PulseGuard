@@ -1,4 +1,4 @@
-const { SuccessResponse } = require('../lib/jsend-response')
+const { SuccessResponse, FailResponse } = require('../lib/jsend-response')
 const { generateJwt } = require('../utils')
 const User = require('../models/user')
 const { validateUser } = require('../schemas')
@@ -9,27 +9,25 @@ const { validateUser } = require('../schemas')
   //   role: request.role
 
 exports.register = function (req, res, next) {
-  if (!validateUser(req.body)) next({ errMsg: 'user validation error', code: 401 })
+  if (!validateUser(req.body)) FailResponse({ message: 'user validation error' }).send(res)
 
-  User.findOne({ email: req.body.email })
-    .then(existingUser => {
-      if (existingUser) next({ errMsg: 'email address already in use', code: 400 })
-
-      const user = new User(req.body)
-      return user.save()
+  const user = new User(req.body)
+  user
+    .save()
+    .then(() => SuccessResponse({ message: 'registration successful' }).send(res))
+    .catch(err => {
+      err.code === 11000
+        ? FailResponse({ message: 'email already in use' }).send(res)
+        : next(err)
     })
-    .then(() => new SuccessResponse({ message: 'registration successful' }).send(res))
-    .catch(next)
 }
 
 exports.login = function (req, res, next) {
-  new SuccessResponse({
-    token: `JWT ${generateJwt(req.body)}`,
-    user: req.body
-  }).send(res)
+  const { username, email } = req.body
+  SuccessResponse({ token: `JWT ${generateJwt({ username, email })}` }).send(res)
 }
 
-//
+  //
 // exports.me = (req, res) => {
 //   return new ApiResponseSuccess({ user: setUserInfo(req.user) }).send(res)
 // }
